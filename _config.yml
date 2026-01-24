@@ -1,0 +1,19 @@
+title: Compuficial
+description: Welcome to my corner of the internet.
+url: "https://compuficial.github.io"
+baseurl: ""
+
+permalink: /blog/:year/:month/:day/:title/
+
+header_pages:
+  - blog.md
+  - about.md
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md

@@ -1,0 +1,17 @@
+---
+layout: default
+---
+
+<div class="home">
+  {{ content }}
+
+  <section class="post-list">
+    <h2>Recent Posts</h2>
+    {% for post in site.posts %}
+      <article class="post-item">
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      </article>
+    {% endfor %}
+  </section>
+</div>

@@ -1,28 +1,87 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="phosphor">
 <head>
   {% include head.html %}
 </head>
 <body>
-  {% include header.html %}
-  <main class="content">
-    {{ content }}
-  </main>
-  {% include footer.html %}
+  {% assign section = "home" %}
+  {% assign path_label = "~" %}
+  {% if page.collection == "notes" or page.url == "/notes/" or page.url == "/notes" %}
+    {% assign section = "notes" %}
+    {% assign path_label = "~/notes" %}
+  {% elsif page.layout == "post" or page.url == "/blog/" or page.url == "/blog" %}
+    {% assign section = "blog" %}
+    {% assign path_label = "~/blog" %}
+  {% elsif page.url contains "/about" %}
+    {% assign section = "about" %}
+    {% assign path_label = "~/about" %}
+  {% endif %}
+  <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+  <div class="terminal" id="page-shell">
+    <div class="term-status" aria-hidden="true">
+      <span class="seg host">compuficial@home</span>
+      <span class="seg">tty1</span>
+      <span class="seg path">{{ path_label }}</span>
+      {% if page.layout == "post" or page.collection == "notes" %}
+      <span class="seg dim">{{ page.title | truncate: 40 }}</span>
+      {% endif %}
+      <span class="seg-rule"></span>
+      <span class="seg dim">pts/0</span>
+      <span class="seg dim">linux</span>
+    </div>
+    <div class="term-body">
+      {% include header.html %}
+      <main class="content">
+        {{ content }}
+      </main>
+    </div>
+    <div class="term-foot" aria-hidden="true">
+      <span class="seg rev">normal</span>
+      <span class="seg{% if section == 'home' %} active{% endif %}">"[home]"</span>
+      <span class="seg{% if section == 'blog' %} active{% endif %}">"[blog]"</span>
+      <span class="seg{% if section == 'notes' %} active{% endif %}">"[notes]"</span>
+      <span class="seg{% if section == 'about' %} active{% endif %}">"[about]"</span>
+      <span class="seg-rule"></span>
+      <span class="seg dim" id="term-clock"></span>
+    </div>
+  </div>
   <script>
     (function() {
-      const toggle = document.getElementById('theme-toggle');
-      const html = document.documentElement;
-      const saved = localStorage.getItem('theme');
-      if (saved) {
+      var html = document.documentElement;
+      var select = document.getElementById('theme-select');
+      var toggle = document.getElementById('menu-toggle');
+      var allowed = { phosphor: 1, amber: 1, slate: 1, paper: 1 };
+      var saved = localStorage.getItem('theme');
+      if (saved && allowed[saved]) {
         html.setAttribute('data-theme', saved);
+        if (select) select.value = saved;
+      } else {
+        localStorage.removeItem('theme');
+        html.setAttribute('data-theme', 'phosphor');
+        if (select) select.value = 'phosphor';
       }
-      toggle.addEventListener('click', function() {
-        const current = html.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-      });
+      if (select) {
+        select.addEventListener('change', function() {
+          html.setAttribute('data-theme', select.value);
+          localStorage.setItem('theme', select.value);
+        });
+      }
+      if (toggle) {
+        toggle.addEventListener('click', function() {
+          var open = html.classList.toggle('menu-open');
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+      }
+      var clock = document.getElementById('term-clock');
+      function tick() {
+        if (!clock) return;
+        var d = new Date();
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        clock.textContent = hh + ':' + mm;
+      }
+      tick();
+      setInterval(tick, 30000);
     })();
   </script>
 </body>

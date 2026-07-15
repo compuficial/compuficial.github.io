@@ -3,15 +3,20 @@ layout: default
 ---
 
 <div class="home">
+  <h1>home</h1>
   {{ content }}
 
-  <section class="post-list">
-    <h2>Recent Posts</h2>
+  <h2>recent_posts</h2>
+  <ul class="post-list">
     {% for post in site.posts %}
-      <article class="post-item">
-        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y.%m.%d" }}</time>
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-      </article>
+      <li>
+        <a href="{{ post.url | relative_url }}">
+          {% unless post.hide_date %}
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+          {% endunless %}
+          <span>{{ post.title }}</span>
+        </a>
+      </li>
     {% endfor %}
-  </section>
+  </ul>
 </div>

@@ -1,15 +1,65 @@
-<header class="site-header">
-  <nav>
-    <a href="{{ '/' | relative_url }}" class="site-title">{{ site.title }}</a>
-    <div class="nav-links">
-      {% for page in site.header_pages %}
-        {% assign p = site.pages | where: "path", page | first %}
-        <a href="{{ p.url | relative_url }}"{% if p.url == page.url %} class="active"{% endif %}>{{ p.title }}</a>
-      {% endfor %}
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-        <span class="icon-sun">&#9788;</span>
-        <span class="icon-moon">&#9790;</span>
-      </button>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-inner">
+    <a href="{{ '/' | relative_url }}" class="site-title">
+      <span class="prompt">$</span> {{ site.title | downcase }}
+    </a>
+
+    <nav class="tree" aria-label="Site">
+      <p class="nav-section">./nav</p>
+      <ul class="nav-ul">
+        <li>
+          <a href="{{ '/' | relative_url }}" class="group{% if page.url == '/' %} active{% endif %}">
+            <span class="tok">›</span>
+            <span class="text">home</span>
+          </a>
+        </li>
+        {% for path in site.header_pages %}
+          {% assign p = site.pages | where: "path", path | first %}
+          {% if p %}
+          <li>
+            <a href="{{ p.url | relative_url }}" class="group{% if p.url == page.url %} active{% endif %}">
+              <span class="tok">›</span>
+              <span class="text">{{ p.title | downcase | replace: ' ', '_' }}</span>
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+
+      <p class="nav-section">./blog</p>
+      <ul class="nav-ul">
+        {% for post in site.posts %}
+        <li>
+          <a href="{{ post.url | relative_url }}" class="group{% if post.url == page.url %} active{% endif %}" title="{{ post.title }}">
+            <span class="tok">›</span>
+            <span class="text">{{ post.title }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <p class="nav-section">./notes</p>
+      <ul class="nav-ul">
+        {% assign notes = site.notes | sort: "date" | reverse %}
+        {% for note in notes %}
+        <li>
+          <a href="{{ note.url | relative_url }}" class="group{% if note.url == page.url %} active{% endif %}" title="{{ note.title }}">
+            <span class="tok">›</span>
+            <span class="text">{{ note.date | date: "%y-%m-%d" }} · {{ note.title }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <label class="theme-label" for="theme-select">palette</label>
+      <select id="theme-select" class="theme-select" aria-label="Color theme">
+        <option value="phosphor">phosphor</option>
+        <option value="amber">amber</option>
+        <option value="slate">slate</option>
+        <option value="paper">paper</option>
+      </select>
     </div>
-  </nav>
-</header>
+  </div>
+</aside>

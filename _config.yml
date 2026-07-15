@@ -5,8 +5,15 @@ baseurl: ""
 
 permalink: /blog/:year/:month/:day/:title/
 
+collections:
+  notes:
+    output: true
+    permalink: /notes/:name/
+    sort_by: date
+
 header_pages:
   - blog.md
+  - notes.md
   - about.md
 
 plugins:

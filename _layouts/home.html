@@ -6,6 +6,18 @@ layout: default
   <h1>home</h1>
   {{ content }}
 
+  <p class="visitor-line" id="visitor-line">
+    congratulations, you are visitor <span class="visitor-n" id="visitor-n">····</span>.
+  </p>
+
+  <h2>Projects</h2>
+  <ul>
+    <li><a href="https://github.com/compuficial/apery">apery</a> - sythetic data generator for agents</li>
+    <li><a href="https://github.com/compuficial/compuficial.github.io">compuficial.github.io</a> — this site. Custom Jekyll blog.</li>
+    <li><a href="https://github.com/compuficial/weather">weather</a> - terminal weather CLI via Open-Meteo</li>
+    <li><a href="https://github.com/compuficial/timezones.watch">timezones.watch</a> - timezone watch</li>
+  </ul>
+
   <h2>recent_posts</h2>
   <ul class="post-list">
     {% for post in site.posts %}
@@ -20,3 +32,54 @@ layout: default
     {% endfor %}
   </ul>
 </div>
+<script>
+  (function () {
+    var n = document.getElementById('visitor-n');
+    if (!n) return;
+
+    function show(count) {
+      n.textContent = String(count).padStart(4, '0');
+    }
+
+    function fromLocal() {
+      try {
+        var key = 'compuficial.visitor.home';
+        var c = parseInt(localStorage.getItem(key) || '0', 10) + 1;
+        if (!isFinite(c) || c < 1) c = 1;
+        localStorage.setItem(key, String(c));
+        return c;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function hit(url, pick) {
+      return fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('http ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          var count = pick(data);
+          if (count == null || !isFinite(Number(count))) throw new Error('bad payload');
+          return Number(count);
+        });
+    }
+
+    hit('https://api.counterapi.dev/v1/compuficial-github-io/visits/up', function (d) {
+      return d.count;
+    })
+      .catch(function () {
+        return hit('https://abacus.jasoncameron.dev/hit/compuficial.github.io/home', function (d) {
+          return d.value;
+        });
+      })
+      .then(function (count) {
+        show(count);
+      })
+      .catch(function () {
+        var local = fromLocal();
+        show(local != null ? local : 1);
+      });
+  })();
+</script>
